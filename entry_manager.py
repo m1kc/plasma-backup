@@ -37,6 +37,7 @@ class EntryManagerFilesystem(EntryManager):
 		return ret
 
 	def remove(self, entry):
+		print("Deleting entry:", entry)
 		filename = os.path.join(self.path, self.conv.to_filename(entry))
 		#print('remove:', filename)
 		os.remove(filename)
