@@ -2,16 +2,13 @@
 from decider import Decider
 
 def main():
-	config = {
-		'strategy': 'btrfs-snapshot',
-		'policy': {
-			'daily': 5,
-			'weekly': 3,
-			'monthly': 2,
-		},
+	policy = {
+		'daily': 5,
+		'weekly': 3,
+		'monthly': 2,
 	}
 	em = None #em = FilesystemEntryManager()
-	d = Decider(em, config['policy'])
+	d = Decider(em, policy)
 	d.execute()
 	print("OK, exiting.")
 

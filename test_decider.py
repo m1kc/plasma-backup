@@ -1,8 +1,10 @@
 from interfaces import EntryManager, GenericDecider
 from decider import Decider
+from entry_manager import EntryManagerFilesystem
 
 from datetime import date, timedelta
 import unittest
+import tempfile
 
 
 class EntryManagerMock(EntryManager):
@@ -10,7 +12,7 @@ class EntryManagerMock(EntryManager):
 		super(EntryManagerMock, self).__init__()
 		self.entries = []
 
-	def add(self, x):
+	def _add(self, x):
 		# print('added', x)
 		self.entries += [x]
 
@@ -22,37 +24,47 @@ class EntryManagerMock(EntryManager):
 		self.entries.remove(target)
 
 
+def test_decider(testcase, em):
+	"""
+	Adds a new backup every day of 2015, checks list of backups
+	2nd of each month.
+	"""
+	decider = Decider(em, {
+		'monthly': 2,
+		'weekly': 3,
+		'daily': 5,
+	})
+	d = date(2015, 1, 1)
+	while True:
+		#print('-->', d)
+		# add entry
+		stamp = 'daily'
+		if d.isoweekday() == 1: stamp = 'weekly'
+		if d.day == 1: stamp = 'monthly'
+		stamp = str(d.year) + str(d.month).zfill(2) + str(d.day).zfill(2) + '-2330-' + stamp
+		em._add(stamp)
+		decider.execute()
+
+		# if we're on checkpoint, compare
+		if d.day == 2:
+			testcase.assertEqual(em.list(), expected_results[d.month])
+
+		# ok, go next
+		d += timedelta(days=1)
+		if d > date(2015, 12, 31):
+			break
+
+
 class TestDecider(unittest.TestCase):
-	def test_year(self):
-		"""
-		Adds a new backup every day of 2015, checks list of backups
-		2nd of each month.
-		"""
+	def test_with_mock(self):
 		em = EntryManagerMock()
-		decider = Decider(em, {
-			'monthly': 2,
-			'weekly': 3,
-			'daily': 5,
-		})
-		d = date(2015, 1, 1)
-		while True:
-			#print('-->', d)
-			# add entry
-			stamp = 'daily'
-			if d.isoweekday() == 1: stamp = 'weekly'
-			if d.day == 1: stamp = 'monthly'
-			stamp = str(d.year) + str(d.month).zfill(2) + str(d.day).zfill(2) + '-2330-' + stamp
-			em.add(stamp)
-			decider.execute()
+		test_decider(self, em)
 
-			# if we're on checkpoint, compare
-			if d.day == 2:
-				self.assertEqual(em.list(), expected_results[d.month])
-
-			# ok, go next
-			d += timedelta(days=1)
-			if d > date(2015, 12, 31):
-				break
+	def test_with_fs(self):
+		with tempfile.TemporaryDirectory() as path:
+			#print(path)
+			em = EntryManagerFilesystem(path)
+			test_decider(self, em)
 
 
 expected_results = {
