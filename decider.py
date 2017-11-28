@@ -1,27 +1,10 @@
+from interfaces import EntryManager, GenericDecider
+
 from datetime import date, timedelta
 import unittest
 
 
-class EntryManager(object):
-	def __init__(self):
-		super(EntryManager, self).__init__()
-
-	def list(self):
-		raise NotImplementedError()
-
-	def remove(self, entry):
-		raise NotImplementedError()
-
-
-class Decider(object):
-	"""
-	Decider reads entries and removes extra ones.
-	"""
-	def __init__(self, entry_manager, policy):
-		super(Decider, self).__init__()
-		self.em = entry_manager
-		self.policy = policy
-
+class Decider(GenericDecider):
 	def _get_group(self, label):
 		ret = []
 		src = self.em.list()
