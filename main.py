@@ -2,6 +2,20 @@
 from decider import Decider
 from entry_manager import EntryManagerFilesystem
 
+import json
+
+
+CONFIG_PATH = "/etc/plasma-rotate.json"
+
+testConfig = {
+	'policy': {
+		'daily': 5,
+		'weekly': 3,
+		'monthly': 2,
+	},
+	'path': '/home/m1kc/work/Still-experimental/plasma-rotate/tdtdtdtdtd',
+}
+
 def main():
 	print("Plasma 1.0")
 	print("- written by m1kc")
@@ -12,14 +26,11 @@ def main():
 	print("USE AT YOUR OWN RISK.")
 	print("")
 
-	config = {
-		'policy': {
-			'daily': 5,
-			'weekly': 3,
-			'monthly': 2,
-		},
-		'path': '/home/m1kc/work/Still-experimental/plasma-rotate/tdtdtdtdtd',
-	}
+	config = None
+	with open(CONFIG_PATH) as f:
+		s = f.read()
+		config = json.loads(s)
+		print("Loaded config from", CONFIG_PATH)
 	em = EntryManagerFilesystem(config['path'])
 	d = Decider(em, config['policy'])
 
