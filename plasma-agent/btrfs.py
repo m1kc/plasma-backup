@@ -1,5 +1,7 @@
 from interfaces import Strategy
 
+import subprocess
+
 class StrategyBtrfsSnapshot(Strategy):
 	"""
 	StrategyBtrfsSnapshot makes a read-only btrfs snapshot before archiving
