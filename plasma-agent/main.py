@@ -5,6 +5,8 @@ from btrfs import StrategyBtrfsSnapshot
 from tar import StrategySimpleTar
 
 import os
+import subprocess
+from datetime import datetime
 
 
 def main():
@@ -25,27 +27,40 @@ def main():
 
 	target_strategy = 'tar'
 	targetFolders = ['/home/m1kc/work/Still-experimental/plasma/plasma-agent']
-	outputPath = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd/last-backup.supertar'
+	tempPath = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd/last-backup.supertar'
 	options = {}
 
 	sshHost = 'localhost'
-	sshPort = 22
 	sshUsername = 'm1kc'
-	remoteFolder = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd/'
+	remoteFolder = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd'
 
-	strategy = strategies[target_strategy](targetFolders, outputPath, options)
+	strategy = strategies[target_strategy](targetFolders, tempPath, options)
 	if not strategy.can_execute():
 		raise OSError("Cannot execute strategy")
 
 	try:
-		os.stat(outputPath)
+		os.stat(tempPath)
 		print("Deleting previous backup")
-		os.remove(outputPath)
+		os.remove(tempPath)
 	except FileNotFoundError:
 		pass
 
 	print("Executing strategy:", target_strategy)
 	strategy.execute()
+
+	d = datetime.now()
+	stamp = 'daily'
+	if d.isoweekday() == 1: stamp = 'weekly'
+	if d.day == 1: stamp = 'monthly'
+	filename = "%d%s%s-%s%s-%s.tar" % (
+		d.year, str(d.month).zfill(2), str(d.day).zfill(2),
+		str(d.hour).zfill(2), str(d.minute).zfill(2),
+		stamp
+	)
+
+	scpArg = "%s@%s:%s/%s" % (sshUsername, sshHost, remoteFolder, filename)
+	print("Uploading file to", scpArg)
+	result = subprocess.run(["scp", tempPath, scpArg])
 
 	print("Everything's fine, exiting.")
 
