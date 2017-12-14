@@ -26,11 +26,7 @@ def main():
 	print("USE AT YOUR OWN RISK.")
 	print("")
 
-	config = None
-	with open(CONFIG_PATH) as f:
-		s = f.read()
-		config = json.loads(s)
-		print("Loaded config from", CONFIG_PATH)
+	config = load_config()
 	em = EntryManagerFilesystem(config['path'])
 	d = Decider(em, config['policy'])
 
@@ -39,6 +35,14 @@ def main():
 	d.execute()
 
 	print("Everything's fine, exiting.")
+
+
+def load_config():
+	with open(CONFIG_PATH) as f:
+		s = f.read()
+		config = json.loads(s)
+		print("Loaded config from", CONFIG_PATH)
+		return config
 
 
 if __name__ == '__main__':
