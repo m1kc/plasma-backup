@@ -14,6 +14,7 @@ class StrategySimpleTar(Strategy):
 		return (result.returncode == 0)
 
 	def execute(self):
-		args = ['tar', '--create', '--file', self.outputPath, '-v'] + self.targetFolders
+		args = ['tar', '--create', '--file', self.outputPath] + self.targetFolders
+		# args = ['tar', '--create', '--file', self.outputPath, '-v'] + self.targetFolders
 		result = subprocess.run(args)
 		return (result.returncode == 0)
