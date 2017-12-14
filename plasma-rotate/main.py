@@ -10,8 +10,6 @@ import os.path
 
 FILENAME = 'plasma-rotate.json'
 
-TEST_PATH = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd'
-
 def main():
 	print("Plasma 1.0")
 	print("- written by m1kc")
