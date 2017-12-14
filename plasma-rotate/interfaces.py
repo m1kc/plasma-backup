@@ -19,4 +19,8 @@ class GenericDecider(object):
 		self.em = entry_manager
 		self.policy = policy
 
+		test = int(policy['daily'])
+		test = int(policy['weekly'])
+		test = int(policy['monthly'])
+
 	def execute(self): raise NotImplementedError()
