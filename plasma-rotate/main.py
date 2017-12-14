@@ -5,6 +5,7 @@ from entry_manager import EntryManagerFilesystem
 
 import json
 import sys
+import os.path
 
 
 FILENAME = 'plasma-rotate.json'
@@ -12,7 +13,6 @@ FILENAME = 'plasma-rotate.json'
 TEST_PATH = '/home/m1kc/work/Still-experimental/plasma/tdtdtdtdtd'
 
 def main():
-	print("This is the name of the script: ", sys.argv[0])
 	print("Plasma 1.0")
 	print("- written by m1kc")
 	print("- https://github.com/m1kc/plasma")
@@ -26,7 +26,7 @@ def main():
 
 	print("Rotating entries in:", path)
 
-	config = load_json(path+'/'+FILENAME)
+	config = load_json(os.path.join(path, FILENAME))
 	em = EntryManagerFilesystem(path)
 	d = Decider(em, config['policy'])
 
