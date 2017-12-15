@@ -7,6 +7,7 @@ from tar import StrategySimpleTar
 import os
 import subprocess
 import json
+import sys
 from datetime import datetime
 
 
@@ -19,13 +20,13 @@ STRATEGIES = {
 }
 
 target_strategy = None
-targetFolders = None
-tempPath = None
+target_folders = None
+temp_path = None
 options = None
 
-sshHost = None
-sshUsername = None
-remoteFolder = None
+ssh_host = None
+ssh_login = None
+remote_folder = None
 
 
 def main():
@@ -34,29 +35,32 @@ def main():
 	config = load_config()
 
 	target_strategy = config['strategy']
-	targetFolders = config['folders']
-	tempPath = config['tempfile']
+	target_folders = config['folders']
+	temp_path = config['tempfile']
 	options = config['options']
 
-	sshHost = config['ssh']['host']
-	sshUsername = config['ssh']['login']
-	remoteFolder = config['remoteFolder']
+	ssh_host = config['ssh']['host']
+	ssh_login = config['ssh']['login']
+	remote_folder = config['remoteFolder']
 
 	# Make the backup
 
-	strategy = STRATEGIES[target_strategy](targetFolders, tempPath, options)
+	strategy = STRATEGIES[target_strategy](target_folders, temp_path, options)
 	if not strategy.can_execute():
 		raise OSError("Cannot execute strategy")
 
 	try:
-		os.stat(tempPath)
+		os.stat(temp_path)
 		print("Deleting previous backup")
-		os.remove(tempPath)
+		os.remove(temp_path)
 	except FileNotFoundError:
 		pass
 
 	print("Executing strategy:", target_strategy)
-	strategy.execute()
+	err = strategy.execute()
+	if err != None:
+		print("Failed to execute strategy:", err)
+		sys.exit(1)
 
 	# Upload file
 
@@ -68,13 +72,19 @@ def main():
 		stamp
 	)
 
-	scpArg = "%s@%s:%s/%s" % (sshUsername, sshHost, remoteFolder, filename)
+	scpArg = "%s@%s:%s/%s" % (ssh_login, ssh_host, remote_folder, filename)
 	print("Uploading file to", scpArg)
-	result = subprocess.run(["scp", tempPath, scpArg])
+	result = subprocess.run(["scp", temp_path, scpArg])
+	if result.returncode != 0:
+		print("Upload failed")
+		sys.exit(1)
 
 	print("Lauching plasma-rotate on remote host")
-	sshArg = "%s@%s" % (sshUsername, sshHost)
-	result = subprocess.run(["ssh", sshArg, "plasma-rotate", remoteFolder])
+	sshArg = "%s@%s" % (ssh_login, ssh_host)
+	result = subprocess.run(["ssh", sshArg, "plasma-rotate", remote_folder])
+	if result.returncode != 0:
+		print("WARNING: plasma-rotate failed, old backups were not deleted")
+		sys.exit(1)
 
 	# Glad it's done
 	print("Everything's fine, exiting.")
