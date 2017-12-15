@@ -1,7 +1,7 @@
 # Maintainer: m1kc (Max Musatov) <m1kc@yandex.ru>
 
 pkgname=plasma-backup-git
-pkgver=r21.44df940
+pkgver=r23.099f8b0
 pkgrel=1
 epoch=
 pkgdesc="A dumb simple backup tool."
@@ -16,7 +16,7 @@ optdepends=()
 provides=()
 conflicts=()
 replaces=()
-backup=()
+backup=('etc/plasma-agent.json')
 options=()
 install=
 changelog=
