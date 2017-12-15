@@ -1,7 +1,7 @@
 # Maintainer: m1kc (Max Musatov) <m1kc@yandex.ru>
 
 pkgname=plasma-backup-git
-pkgver=r23.099f8b0
+pkgver=r24.ecf5d72
 pkgrel=1
 epoch=
 pkgdesc="A dumb simple backup tool."
@@ -53,10 +53,12 @@ package() {
 	mkdir -p "$pkgdir/opt/plasma"
 	mkdir -p "$pkgdir/usr/bin"
 	mkdir -p "$pkgdir/etc"
+	mkdir -p "$pkgdir/usr/lib/systemd/system"
 
 	cd "$srcdir/$pkgname"
 	cp -r plasma-agent plasma-rotate "$pkgdir/opt/plasma/"
 	cp plasma-agent.example.json "$pkgdir/etc/plasma-agent.json"
+	cp systemd/* "$pkgdir/usr/lib/systemd/system/"
 
 	cd "$pkgdir/usr/bin"
 	ln -s ../../opt/plasma/plasma-agent/main.py plasma-agent

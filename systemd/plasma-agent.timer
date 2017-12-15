@@ -1,0 +1,24 @@
+[Unit]
+Description=Timer for plasma-agent (backup service)
+
+[Timer]
+# Define target unit (in case the name part is the same, can be omitted)
+Unit=plasma-agent.service
+
+## Activate target unit based on monotonic timers
+
+# Time to wait after booting before we run first time
+#OnBootSec=10min
+
+# Time between running each consecutive time
+#OnUnitActiveSec=30min
+
+## or ..
+## Activate target based on wallclock time (calendar event)
+
+# Define a calendar event (see `man systemd.time`)
+#OnCalendar=*-*-* 12:13:00
+OnCalendar=daily
+
+[Install]
+WantedBy=multi-user.target

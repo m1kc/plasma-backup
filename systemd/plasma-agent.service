@@ -1,0 +1,7 @@
+[Unit]
+Description=plasma-agent (backup service)
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/plasma-agent
+StandardError=journal
