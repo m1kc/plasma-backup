@@ -22,10 +22,14 @@ class StrategyBtrfsSnapshot(Strategy):
 			os.stat("/@snapshot")
 			print("Deleting existing snapshot")
 			result = subprocess.run(["btrfs", "subvolume", "delete", "--commit-after", "/@snapshot"])
+			if result.returncode != 0:
+				return "Failed to delete existing snapshot"
 		except:
 			pass
 
-		result = subprocess.run(["btrfs", "subvolume", "snapshot", "-r", "/@snapshot", "/"])
+		result = subprocess.run(["btrfs", "subvolume", "snapshot", "-r", "/", "/@snapshot"])
+		if result.returncode != 0:
+			return "Failed to create snapshot"
 
 		folders = list(map(lambda x: "/@snapshot"+x, self.targetFolders))
 		args = ['tar', '--create', '--file', self.outputPath] + folders
@@ -33,7 +37,6 @@ class StrategyBtrfsSnapshot(Strategy):
 		result = subprocess.run(args)
 		#return (result.returncode == 0)
 
-		try:
-			result = subprocess.run(["btrfs", "subvolume", "delete", "--commit-after", "/@snapshot"])
-		except:
-			print("StrategyBtrfsSnapshot: failed to delete snapshot, proceeding anyway")
+		result = subprocess.run(["btrfs", "subvolume", "delete", "--commit-after", "/@snapshot"])
+		if result.returncode != 0:
+			print("WARNING: failed to delete snapshot")

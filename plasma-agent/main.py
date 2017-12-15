@@ -79,7 +79,7 @@ def main():
 		print("Upload failed")
 		sys.exit(1)
 
-	print("Lauching plasma-rotate on remote host")
+	print("Launching plasma-rotate on remote host")
 	sshArg = "%s@%s" % (ssh_login, ssh_host)
 	result = subprocess.run(["ssh", sshArg, "plasma-rotate", remote_folder])
 	if result.returncode != 0:
