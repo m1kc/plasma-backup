@@ -110,7 +110,7 @@ def get_stamp(date):
 def splash():
 	print("Plasma 1.0")
 	print("- written by m1kc")
-	print("- https://github.com/m1kc/plasma")
+	print("- https://github.com/m1kc/plasma-backup")
 	print("- licensed under GNU GPL v3")
 	print("")
 	print("THIS SOFTWARE IS STILL EXPERIMENTAL.")
