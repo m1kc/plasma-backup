@@ -1,0 +1,64 @@
+# Maintainer: m1kc (Max Musatov) <m1kc@yandex.ru>
+
+pkgname=plasma-backup-git
+pkgver=r21.44df940
+pkgrel=1
+epoch=
+pkgdesc="A dumb simple backup tool."
+arch=('any')
+url=""
+license=('GPL')
+groups=()
+depends=('python')
+makedepends=('git')
+checkdepends=()
+optdepends=()
+provides=()
+conflicts=()
+replaces=()
+backup=()
+options=()
+install=
+changelog=
+source=("plasma-backup-git::git+https://github.com/m1kc/plasma-backup.git")
+noextract=()
+sha256sums=('SKIP')
+validpgpkeys=()
+
+pkgver() {
+	cd "$pkgname"
+	printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+prepare() {
+	true
+	#cd "$pkgname-$pkgver"
+	#patch -p1 -i "$srcdir/$pkgname-$pkgver.patch"
+}
+
+build() {
+	true
+	#cd "$pkgname-$pkgver"
+	#./configure --prefix=/usr
+	#make
+}
+
+check() {
+	true
+	#cd "$pkgname-$pkgver"
+	#make -k check
+}
+
+package() {
+	mkdir -p "$pkgdir/opt/plasma"
+	mkdir -p "$pkgdir/usr/bin"
+	mkdir -p "$pkgdir/etc"
+
+	cd "$srcdir/$pkgname"
+	cp -r plasma-agent plasma-rotate "$pkgdir/opt/plasma/"
+	cp plasma-agent.example.json "$pkgdir/etc/plasma-agent.json"
+
+	cd "$pkgdir/usr/bin"
+	ln -s ../../opt/plasma/plasma-agent/main.py plasma-agent
+	ln -s ../../opt/plasma/plasma-rotate/main.py plasma-rotate
+}

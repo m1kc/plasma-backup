@@ -1,0 +1,15 @@
+{
+	"folders": [
+		"/bin",
+		"/etc"
+	],
+	"tempfile": "/tmp/backup.tar",
+	"strategy": "tar",
+	"options": {},
+
+	"ssh": {
+		"host": "127.0.0.1",
+		"login": "plasma"
+	},
+	"remoteFolder": "/data/backup"
+}

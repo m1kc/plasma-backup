@@ -1,5 +1,10 @@
 tdtdtdtdtd/
 
+archlinux/src
+archlinux/pkg
+archlinux/plasma-backup-git
+archlinux/*.xz
+
 
 # Created by https://www.gitignore.io/api/python
 
