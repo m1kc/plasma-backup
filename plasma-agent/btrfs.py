@@ -1,6 +1,7 @@
 from interfaces import Strategy
 
 import subprocess
+import os
 
 class StrategyBtrfsSnapshot(Strategy):
 	"""
