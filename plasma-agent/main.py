@@ -46,12 +46,21 @@ def main():
 	ssh_login = config['ssh']['login']
 	remote_folder = config['remoteFolder']
 
-	# Make the backup
+	execute_before = config['executeBefore']
+	execute_after = config['executeAfter']
 
+	# Pick up strategy
 	strategy = STRATEGIES[target_strategy](target_folders, temp_path, options)
 	log.debug('Checking if we can use this strategy: %s', target_strategy)
 	if not strategy.can_execute():
 		raise OSError("Cannot execute strategy")
+
+	# Execute pre-commands, cancel operation if any fails
+	for cmd in execute_before:
+		log.info("Executing pre-command: %s", cmd)
+		subprocess.run(cmd, check=True, shell=True)
+
+	# Make the backup
 
 	try:
 		log.debug('Checking for previous backup')
@@ -90,6 +99,14 @@ def main():
 	if result.returncode != 0:
 		log.warning("plasma-rotate failed, old backups were not deleted")
 		sys.exit(1)
+
+	# Execute pre-commands, cancel operation if any fails
+	for cmd in execute_after:
+		log.info("Executing post-command: %s", cmd)
+		try:
+			subprocess.run(cmd, check=True, shell=True)
+		except:
+			log.warning("Command failed, continuing anyway")
 
 	# Glad it's done
 	log.info("Everything's fine, exiting.")

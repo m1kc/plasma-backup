@@ -11,5 +11,8 @@
 		"host": "127.0.0.1",
 		"login": "plasma"
 	},
-	"remoteFolder": "/data/backup"
+	"remoteFolder": "/data/backup",
+
+	"executeBefore": ["df -h"],
+	"executeAfter": ["echo THIS WAS A TRIUMPH", "echo I AM MAKING A NOTE HERE: HUGE SUCCESS"]
 }
