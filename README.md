@@ -80,5 +80,5 @@ Make a test backup by running `sudo plasma-agent`. To enable midnight timer, typ
 ## Backup strategies
 
 * `tar` &mdash; Just tar up target folders.
-* `btrfs-snapshot` &mdash; Make a read-only snapshot of filesystem, then tar it up. **IMPORTANT:** This strategy is somewhat dumb and assumes that all your target folders are located in the same mountpoint as `/`, and it's btrfs. If that's not the case, you might need to make some modifications to Plasma source code to fit your case. We'll improve that in the future.
+* `btrfs-snapshot` &mdash; Make a read-only snapshot of filesystem, then tar it up. **IMPORTANT:** This strategy is somewhat dumb and assumes that all your target folders are located in the same mountpoint as `/`, and it's btrfs. In other words, it makes a snapshot of `/` and then tars it up, so if any of the target files are located on another filesystem, they will still be archived but won't be covered by snapshotting (which is probably not what you want, altough it depends on the situation). Currently the only way to work around this issue is to make modifications to Plasma source code. We'll address that in the future.
 * `noop` &mdash; Use for debugging. Just creates an empty file.
