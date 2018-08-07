@@ -2,9 +2,16 @@
 
 `WORK IN PROGRESS` `EXPERIMENTAL SOFTWARE` Dec 2017
 
-Plasma is a small and simple backup utility designed to be able to handle btrfs snapshots. So, its primary (not the only one, fortunately) usecase is: take a btrfs filesystem, make a read-only snapshot, tar it up and upload on remote server via SSH. It also provides tools for backup rotation, that is, deleting old archives.
+Plasma is a small and simple backup utility designed to be able to do backups using btrfs snapshots. So, its primary (not the only one, fortunately) usecase is: take a btrfs filesystem, make a read-only snapshot, tar it up and upload on remote server via SSH. Naturally, it also provides tools for backup rotation, that is, deleting old archives.
 
-Plasma used with `btrfs-snapshot` strategy is suitable for backing up working databases without stopping them. Not the best way (you probably should use pg_dump or something like this), but it's definitely possible. Such a backup would look like a sudden loss of electricity to your database and will probably just trigger its normal recovery procedures. MySQL and PostgreSQL seem to eat these backups quite successfully.
+
+## Why snapshots?
+
+Imagine backing up a really large frequently changed file&nbsp;&mdash; like, a database. If you just copy it to another machine, you will discover that the copy is a complete garbage&nbsp;&mdash; it looks like a database but your RDBMS says it's not valid. That happened because these files are not append-only: while you copy the file's tail, RDBMS changes its head, transaction becomes half-written-half-not, and the whole DB becomes unusable.
+
+Btrfs snapshots, on the other hand, mitigate this issue. Once you create a snapshot, all the files within it are frozen, and any consequent writes do not affect snapshot's state. In other words, to your RDBMS snapshotting looks like a sudden loss of electricity&nbsp;&mdash; and most of them are specifically designed to handle such cases. Specifically, MySQL and PostgreSQL seem to recover from these backups quite successfully.
+
+Please note that snapshotting a working database is not the only and definitely not the best way to do this. Consider using `pg_dump` or similar tools first. Use snapshots only if you're sure what are you doing.
 
 
 ## Installing (Arch Linux)
@@ -30,14 +37,14 @@ Install Plasma, create some folders for your backups, one per machine. Their nam
 }
 ```
 
-These numbers indicate how many backups of each types should be stored. Monthly backups happen at 1st of every month, weekly backups - on 1st day of every week, any other backup is considered daily. In the example above, Plasma will always store 5+3+2=10 last backups (even if some weekly backup happens on 1st day of month, slot will be used for an extra weekly backup).
+These numbers indicate how many backups of each type should be stored. Monthly backups happen at 1st day of every month, weekly backups - on 1st day of every week, any other backup is considered daily. In the example above, Plasma will always store 5+3+2=10 last backups (even if some weekly backup happens on 1st day of month, slot will be used for an extra weekly backup).
 
 Also make sure that every agent can write to these folders using SSH without a password (set up public key auth for this purpose).
 
 
 ## Configuration (agents)
 
-Install Plasma on every machine, then edit `/etc/plasma-agent.conf`. Note that this file should be a valid JSON (you can't actually put comments there).
+Install Plasma on every machine, then edit `/etc/plasma-agent.conf`. Note that this file must be a valid JSON (you can't actually put comments there).
 
 ```js
 {
