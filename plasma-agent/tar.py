@@ -3,6 +3,8 @@ from interfaces import Strategy
 import os
 import subprocess
 
+import logging; log = logging.getLogger(__name__)
+
 
 class StrategySimpleTar(Strategy):
 	"""
@@ -14,6 +16,7 @@ class StrategySimpleTar(Strategy):
 		return (result.returncode == 0)
 
 	def execute(self):
+		log.info("Creating tar archive: %s", self.outputPath)
 		args = ['tar', '--create', '--file', self.outputPath] + self.targetFolders
 		# args = ['tar', '--create', '--file', self.outputPath, '-v'] + self.targetFolders
 		result = subprocess.run(args)

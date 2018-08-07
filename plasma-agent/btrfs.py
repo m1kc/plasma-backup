@@ -3,6 +3,9 @@ from interfaces import Strategy
 import subprocess
 import os
 
+import logging; log = logging.getLogger(__name__)
+
+
 class StrategyBtrfsSnapshot(Strategy):
 	"""
 	StrategyBtrfsSnapshot makes a read-only btrfs snapshot before archiving
@@ -21,23 +24,26 @@ class StrategyBtrfsSnapshot(Strategy):
 	def execute(self):
 		try:
 			os.stat("/@snapshot")
-			print("Deleting existing snapshot")
+			log.info("Deleting existing snapshot")
 			result = subprocess.run(["btrfs", "subvolume", "delete", "--commit-after", "/@snapshot"])
 			if result.returncode != 0:
 				return "Failed to delete existing snapshot"
 		except:
 			pass
 
+		log.info("Creating read-only snapshot at /@snapshot")
 		result = subprocess.run(["btrfs", "subvolume", "snapshot", "-r", "/", "/@snapshot"])
 		if result.returncode != 0:
 			return "Failed to create snapshot"
 
+		log.info("Running tar")
 		folders = list(map(lambda x: "/@snapshot"+x, self.targetFolders))
 		args = ['tar', '--create', '--file', self.outputPath] + folders
 		# args = ['tar', '--create', '--file', self.outputPath, '-v'] + folders
 		result = subprocess.run(args)
 		#return (result.returncode == 0)
 
+		log.info("Removing snapshot")
 		result = subprocess.run(["btrfs", "subvolume", "delete", "--commit-after", "/@snapshot"])
 		if result.returncode != 0:
-			print("WARNING: failed to delete snapshot")
+			log.warning("Failed to delete snapshot, leaving it at /@snapshot")

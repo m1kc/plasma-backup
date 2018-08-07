@@ -10,6 +10,8 @@ import json
 import sys
 from datetime import datetime
 
+import logging; log = logging.getLogger(__name__)
+
 
 CONFIG_PATH = '/etc/plasma-agent.json'
 
@@ -30,6 +32,7 @@ remote_folder = None
 
 
 def main():
+	logging.basicConfig(level=logging.DEBUG, format='[%(levelname)s] %(name)s: %(message)s')
 	splash()
 
 	config = load_config()
@@ -46,20 +49,22 @@ def main():
 	# Make the backup
 
 	strategy = STRATEGIES[target_strategy](target_folders, temp_path, options)
+	log.debug('Checking if we can use this strategy: %s', target_strategy)
 	if not strategy.can_execute():
 		raise OSError("Cannot execute strategy")
 
 	try:
+		log.debug('Checking for previous backup')
 		os.stat(temp_path)
-		print("Deleting previous backup")
+		log.info('Deleting previous backup')
 		os.remove(temp_path)
 	except FileNotFoundError:
 		pass
 
-	print("Executing strategy:", target_strategy)
+	log.info("Starting backup (using strategy: %s)", target_strategy)
 	err = strategy.execute()
 	if err != None:
-		print("Failed to execute strategy:", err)
+		log.error("Failed to execute strategy: %s", err)
 		sys.exit(1)
 
 	# Upload file
@@ -73,28 +78,28 @@ def main():
 	)
 
 	scpArg = "%s@%s:%s/%s" % (ssh_login, ssh_host, remote_folder, filename)
-	print("Uploading file to", scpArg)
+	log.info("Uploading file to %s", scpArg)
 	result = subprocess.run(["scp", temp_path, scpArg])
 	if result.returncode != 0:
-		print("Upload failed")
+		log.error("Upload failed")
 		sys.exit(1)
 
-	print("Launching plasma-rotate on remote host")
+	log.info("Launching plasma-rotate on remote host")
 	sshArg = "%s@%s" % (ssh_login, ssh_host)
 	result = subprocess.run(["ssh", sshArg, "plasma-rotate", remote_folder])
 	if result.returncode != 0:
-		print("WARNING: plasma-rotate failed, old backups were not deleted")
+		log.warning("plasma-rotate failed, old backups were not deleted")
 		sys.exit(1)
 
 	# Glad it's done
-	print("Everything's fine, exiting.")
+	log.info("Everything's fine, exiting.")
 
 
 def load_config():
 	with open(CONFIG_PATH) as f:
 		s = f.read()
 		config = json.loads(s)
-		print("Loaded config from", CONFIG_PATH)
+		log.debug("Loaded config from %s", CONFIG_PATH)
 		return config
 
 
