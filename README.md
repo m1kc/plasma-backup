@@ -1,6 +1,7 @@
 # plasma-backup
 
-`WORK IN PROGRESS` `EXPERIMENTAL SOFTWARE` Dec 2017
+* :wrench: Quality: **beta**
+* :cityscape: Used in production since **Dec 2017**
 
 Plasma is a small and simple backup utility designed to be able to do backups using btrfs snapshots. So, its primary (not the only one, fortunately) usecase is: take a btrfs filesystem, make a read-only snapshot, tar it up and upload on remote server via SSH. Naturally, it also provides tools for backup rotation, that is, deleting old archives.
 
