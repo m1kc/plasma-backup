@@ -5,6 +5,8 @@ archlinux/pkg
 archlinux/plasma-backup-git
 archlinux/*.xz
 
+debian/*.deb
+
 
 # Created by https://www.gitignore.io/api/python
 
