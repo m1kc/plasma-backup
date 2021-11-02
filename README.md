@@ -6,7 +6,7 @@ Plasma is a small and simple backup utility designed to be able to do backups us
 * :cityscape: Was used in production: **Dec 2017 — Jul 2021** (on fleet of 30 servers)
 * :2nd_place_medal: Was awarded a title (by me) of 2nd best backup utility in the world (1st place taken by [borg](https://borgbackup.readthedocs.io))
 
-_This utility has an interesting fate — I sent it to production in 2017 and it turned out to be very reliable and perfectly fit for our use cases, so I didn't bother making any noticeable changes until the very day we switched to borg. It still has some very rough edges, but in 4 years I never saw any real reason to fix anything. And we switched because borg had more features, it's not that I was unhappy with plasma — we just needed a program of another class._
+_This utility has an interesting fate — I sent it to production in 2017 and it turned out to be very reliable and perfectly fit for our use cases, so I didn't bother making any noticeable changes until the very day we switched to borg. It still has some very rough edges, but in 4 years I never saw any real reason to fix anything. And we switched because borg had more features, it's not that I was unhappy with plasma — we just needed a program of another class. It wasn't really possible to "fix" or "rewrite" things without rewriting literally everything from scratch. So, plasma stayed what it was — a small utility with minimal codebase and simplicity as its main feature._
 
 
 ## Why snapshots?
