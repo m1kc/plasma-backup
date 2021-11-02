@@ -1,9 +1,10 @@
 # plasma-backup
 
-* :wrench: Quality: **beta**
-* :cityscape: Used in production since **Dec 2017**
-
 Plasma is a small and simple backup utility designed to be able to do backups using btrfs snapshots. So, its primary (not the only one, fortunately) usecase is: take a btrfs filesystem, make a read-only snapshot, tar it up and upload on remote server via SSH. Naturally, it also provides tools for backup rotation, that is, deleting old archives.
+
+* :wrench: Quality: **stable** with caveats (see below)
+* :cityscape: Was used in production: **Dec 2017 — Jul 2021** (on fleet of 30 servers)
+* :2nd_place_medal: Was awarded a title (by me) of 2nd best backup utility in the world (1st place taken by [borg](https://borgbackup.readthedocs.io))
 
 
 ## Why snapshots?
@@ -13,6 +14,16 @@ Imagine backing up a really large frequently changed file&nbsp;&mdash; like, a d
 Btrfs snapshots, on the other hand, mitigate this issue. Once you create a snapshot, all the files within it are frozen, and any consequent writes do not affect snapshot's state. In other words, to your RDBMS snapshotting looks like a sudden loss of electricity&nbsp;&mdash; and most of them are specifically designed to handle such cases. Specifically, MySQL and PostgreSQL seem to recover from these backups quite successfully.
 
 Please note that snapshotting a working database is not the only and definitely not the best way to do this. Consider using `pg_dump` or similar tools first. Use snapshots only if you're sure what are you doing.
+
+
+## Compatibility promise
+
+We promise not to break existing features, configs, etc. until a major release.
+
+## Known issues (or features)
+
+* Up to a half of your disk space will be reserved for backup archive;
+* btrfs snapshotting is dumb (see below).
 
 
 ## Installing (Arch Linux)
